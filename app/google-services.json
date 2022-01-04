@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "579538163955",
+    "project_id": "cryptchat-957b3",
+    "storage_bucket": "cryptchat-957b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579538163955:android:7c0cceb53fca13c43bff86",
+        "android_client_info": {
+          "package_name": "com.coffeecoders.cryptchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "579538163955-ihrovcp3hnp4ubqg0hc1to0h0tn8ok09.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.coffeecoders.cryptchat",
+            "certificate_hash": "f82618524f255dae3470e1f9b5d74d83c68a7dc5"
+          }
+        },
+        {
+          "client_id": "579538163955-8buq9t6ol7d32lm6ua5k8487nv4bio5o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUcAtC8CXlSyJp1CMbdGob0K6DPTzeuL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "579538163955-8buq9t6ol7d32lm6ua5k8487nv4bio5o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

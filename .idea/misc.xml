@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/ankan/Documents/AndroidStudioProjects/DeskClock/CryptChat/app/src/main/res/drawable/outline_send_24.xml" value="0.31223628691983124" />
+        <entry key="..\:/Users/ankan/Documents/AndroidStudioProjects/DeskClock/CryptChat/app/src/main/res/drawable/round_send_20.xml" value="0.31223628691983124" />
+        <entry key="..\:/Users/ankan/Documents/AndroidStudioProjects/DeskClock/CryptChat/app/src/main/res/drawable/rounded_corner_view.xml" value="0.31223628691983124" />
+        <entry key="..\:/Users/ankan/Documents/AndroidStudioProjects/DeskClock/CryptChat/app/src/main/res/layout/activity_main.xml" value="0.29915611814345994" />
+        <entry key="..\:/Users/ankan/Documents/AndroidStudioProjects/DeskClock/CryptChat/app/src/main/res/layout/activity_phone_number.xml" value="0.2914529914529915" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
