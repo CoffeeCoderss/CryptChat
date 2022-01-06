@@ -3,6 +3,8 @@ package com.coffeecoders.cryptchat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -60,8 +62,11 @@ public class OTPActivity extends AppCompatActivity {
         binding.otpView.setOtpCompletionListener(otp -> {
             PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(verifyID, otp);
             firebaseAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener(task -> {
-                if (task.isSuccessful())
-                    Toast.makeText(OTPActivity.this, "Successful", Toast.LENGTH_SHORT).show();
+                if (task.isSuccessful()) {
+                    Intent intent = new Intent(OTPActivity.this, SetupProfileActivity.class);
+                    startActivity(intent);
+                    finishAffinity();
+                }
                 else
                     Toast.makeText(OTPActivity.this, "Failed", Toast.LENGTH_SHORT).show();
             });
