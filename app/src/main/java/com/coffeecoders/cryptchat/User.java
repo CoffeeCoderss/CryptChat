@@ -1,25 +1,25 @@
 package com.coffeecoders.cryptchat;
 
 public class User {
-    private String uID, name, phoneNumber, profileImage;
+    private String uid, name, phoneNumber, profileImage;
 
     public User() {
 
     }
 
-    public User(String uID, String name, String phoneNumber, String profileImage) {
-        this.uID = uID;
+    public User(String uid, String name, String phoneNumber, String profileImage) {
+        this.uid = uid;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.profileImage = profileImage;
     }
 
-    public String getuID() {
-        return uID;
+    public String getUid() {
+        return uid;
     }
 
-    public void setuID(String uID) {
-        this.uID = uID;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getName() {

@@ -1,24 +1,18 @@
 package com.coffeecoders.cryptchat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.coffeecoders.cryptchat.databinding.ActivityOtpactivityBinding;
-import com.coffeecoders.cryptchat.databinding.ActivityPhoneNumberBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.mukesh.OnOtpCompletionListener;
 
 import java.util.concurrent.TimeUnit;
 
@@ -68,7 +62,7 @@ public class OTPActivity extends AppCompatActivity {
                     finishAffinity();
                 }
                 else
-                    Toast.makeText(OTPActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OTPActivity.this, "Invalid OTP", Toast.LENGTH_SHORT).show();
             });
         });
     }
