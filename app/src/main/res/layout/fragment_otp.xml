@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".OTPActivity">
+
+    <TextView
+        android:id="@+id/verifyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:text="Verify your number"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_centerInParent="true"
+        android:text="Enter the OTP within 60 seconds"
+        android:textColor="#C0C0C0"
+        android:layout_below="@id/verifyTextView" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="128dp"
+        android:layout_height="105dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="smsImage"
+       android:layout_below="@id/textView"
+        android:layout_centerInParent="true"
+        app:srcCompat="@drawable/round_sms_20"
+        app:tint="@color/peachpuff" />
+    <com.mukesh.OtpView
+        android:id="@+id/fragment_otpView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:focusableInTouchMode="true"
+        android:itemBackground="@drawable/rounded_corner_view"
+        android:textColor="@android:color/white"
+        app:OtpItemCount="6"
+        android:layout_centerInParent="true"
+       android:layout_below="@id/imageView" />
+
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_centerInParent="true"
+        android:backgroundTint="@color/peachpuff"
+        android:text="CONFIRM"
+        android:textColor="@color/background"
+        android:layout_below="@+id/otpView"/>
+</RelativeLayout>
