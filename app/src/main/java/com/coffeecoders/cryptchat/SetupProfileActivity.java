@@ -37,6 +37,7 @@ public class SetupProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySetupProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        getSupportActionBar().hide();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
@@ -47,43 +48,42 @@ public class SetupProfileActivity extends AppCompatActivity {
         });
         // all types of images will be available to select
         binding.profileImage.setOnClickListener(view -> getImage.launch("image/*"));
-        binding.confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = binding.nameTextView.getText().toString();
-                if (name.isEmpty()) {
-                    binding.nameTextView.setError("Please enter a name to continue");
-                    return;
-                }
-                if (selectedImage != null) {
-                    StorageReference storageReference = firebaseStorage.getReference().child("Profiles").child(firebaseAuth.getUid());
-                    storageReference.putFile(selectedImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        String imageURL = uri.toString();
-                                        String uid = firebaseAuth.getUid();
-                                        String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
-                                        String name = binding.nameTextView.getText().toString();
-                                        User user = new User(uid, name, phone, imageURL);
-                                        CollectionReference collectionReference = firebaseFirestore.collection("users");
-                                        collectionReference.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                            @Override
-                                            public void onSuccess(DocumentReference documentReference) {
-                                                Intent intent = new Intent(SetupProfileActivity.this, MainActivity.class);
-                                                startActivity(intent);
-                                                finish();
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
+        binding.confirmButton.setOnClickListener(view -> {
+            String name = binding.nameTextView.getText().toString();
+            if (name.isEmpty()) {
+                binding.nameTextView.setError("Please enter a name to continue");
+                return;
+            }
+            if (selectedImage != null) {
+                StorageReference storageReference = firebaseStorage.getReference().child("Profiles").child(firebaseAuth.getUid());
+                storageReference.putFile(selectedImage).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String imageURL = uri.toString();
+                            String uid = firebaseAuth.getUid();
+                            String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
+                            String userName = binding.nameTextView.getText().toString();
+                            User user = new User(uid, userName, phone, imageURL);
+                            CollectionReference collectionReference = firebaseFirestore.collection("users");
+                            collectionReference.add(user).addOnSuccessListener(documentReference -> {
+                                Intent intent = new Intent(SetupProfileActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            });
+                        });
+                    }
+                });
+            } else {
+                String uid = firebaseAuth.getUid();
+                String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
+                String userName = binding.nameTextView.getText().toString();
+                User user = new User(uid, userName, phone, "No image");
+                CollectionReference collectionReference = firebaseFirestore.collection("users");
+                collectionReference.add(user).addOnSuccessListener(documentReference -> {
+                    Intent intent = new Intent(SetupProfileActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                });
             }
         });
     }

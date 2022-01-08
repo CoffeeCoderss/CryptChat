@@ -26,6 +26,7 @@ public class OTPActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityOtpactivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        getSupportActionBar().hide();
         String phoneNumber = getIntent().getStringExtra("phoneNumber");
         firebaseAuth = FirebaseAuth.getInstance();
         // otp options
