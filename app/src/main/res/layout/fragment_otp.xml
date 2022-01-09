@@ -54,12 +54,14 @@
 
     <Button
         android:id="@+id/confirm_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_below="@id/fragment_otpView"
         android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
         android:backgroundTint="@color/peachpuff"
         android:text="CONFIRM"
-        android:textColor="@color/background"
-        android:layout_below="@+id/otpView"/>
+        android:textColor="@color/background" />
 </RelativeLayout>

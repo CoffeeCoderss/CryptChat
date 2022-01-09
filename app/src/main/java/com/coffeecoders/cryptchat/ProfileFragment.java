@@ -102,6 +102,17 @@ public class ProfileFragment extends Fragment {
                             }
                         }
                     });
+                } else {
+                    String uid = firebaseAuth.getUid();
+                    String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
+                    String userName = profileBinding.nameTextView.getText().toString();
+                    User user = new User(uid, userName, phone, "No image");
+                    CollectionReference collectionReference = firebaseFirestore.collection("users");
+                    collectionReference.add(user).addOnSuccessListener(documentReference -> {
+//                        Intent intent = new Intent(ProfileFragment.this, MainActivity.class);
+//                        startActivity(intent);
+//                        finish();
+                    });
                 }
             }
         });
