@@ -37,9 +37,7 @@ public class ProfileFragment extends Fragment {
     ActivityResultLauncher<String> getImage;
     Uri selectedImage;
     public ProfileFragment() {
-        // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
