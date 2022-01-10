@@ -53,7 +53,7 @@ public class ProfileFragment extends Fragment {
 
         profileBinding =  FragmentProfileBinding.inflate(inflater, container, false);
         profileToolbar = getActivity().findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("set profile");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Profile");
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
 
         firebaseAuth = FirebaseAuth.getInstance();
