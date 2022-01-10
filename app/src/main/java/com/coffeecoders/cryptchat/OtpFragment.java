@@ -48,7 +48,7 @@ public class OtpFragment extends Fragment {
 
         otpBinding = FragmentOtpBinding.inflate(inflater, container, false);
         otpToolbar = getActivity().findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("otp");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("OTP");
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
         String phoneNumber = getArguments().getString("phoneNumber");
         firebaseAuth = FirebaseAuth.getInstance();

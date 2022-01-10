@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".PhoneNumberActivity">
+    android:background="@color/background">
 
     <TextView
         android:id="@+id/verifyTextView"
@@ -42,18 +41,19 @@
         android:layout_centerInParent="true"
         app:srcCompat="@drawable/round_sms_20"
         app:tint="@color/peachpuff" />
+
     <EditText
         android:id="@+id/phoneNumberTextView"
         android:layout_width="300dp"
         android:layout_height="50dp"
+        android:layout_below="@id/imageView"
+        android:layout_centerInParent="true"
         android:background="@drawable/rounded_corner_view"
         android:gravity="center"
-        android:hint="Enter your phone Ashis"
+        android:hint="Enter your phone number"
         android:inputType="phone"
         android:textColor="@color/white"
-        android:textColorHint="@color/white"
-        android:layout_centerInParent="true"
-        android:layout_below="@id/imageView" />
+        android:textColorHint="@color/white" />
 
     <Button
         android:id="@+id/continueButton"
