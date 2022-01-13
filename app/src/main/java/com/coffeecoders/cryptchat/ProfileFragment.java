@@ -92,8 +92,9 @@ public class ProfileFragment extends Fragment {
                                         collectionReference.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                             @Override
                                             public void onSuccess(DocumentReference documentReference) {
-                                                getActivity().getSupportFragmentManager().beginTransaction().
-                                                        add(R.id.fragment_container , new PhoneNoFragment()).commit();
+                                                Intent ChatListIntent = new Intent
+                                                        (getContext(),ChatListActivity.class );
+                                                startActivity(ChatListIntent);
                                             }
                                         });
                                     }
@@ -108,8 +109,9 @@ public class ProfileFragment extends Fragment {
                     User user = new User(uid, userName, phone, "No image");
                     CollectionReference collectionReference = firebaseFirestore.collection("users");
                     collectionReference.add(user).addOnSuccessListener(documentReference -> {
-                        getActivity().getSupportFragmentManager().beginTransaction().
-                                add(R.id.fragment_container , new PhoneNoFragment()).commit();
+                        Intent ChatListIntent = new Intent
+                                (getContext(),ChatListActivity.class );
+                        startActivity(ChatListIntent);
                     });
                 }
             }
