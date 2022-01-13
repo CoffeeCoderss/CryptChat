@@ -11,10 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.coffeecoders.cryptchat.databinding.FragmentPhoneNoBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class PhoneNoFragment extends Fragment {
     FragmentPhoneNoBinding phoneNoBinding;
     private Toolbar PhoneNoToolbar;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+
     public PhoneNoFragment() {
         // Required empty public constructor
     }
@@ -22,7 +27,6 @@ public class PhoneNoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -33,6 +37,12 @@ public class PhoneNoFragment extends Fragment {
         PhoneNoToolbar = getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("CryptChat");
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser != null) {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+        }
         phoneNoBinding.continueButton.setOnClickListener(view -> {
 //            Intent intent = new Intent(getContext(), OtpFragment.class);
 //            intent.putExtra("phoneNumber", phoneNoBinding.phoneNumberTextView.getText().toString());

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:layout_marginTop="5dp"
-    android:background="@drawable/rounded_corner_view">
+    android:background="@drawable/rounded_corner_view"
+    android:layout_margin="3dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/userImage"

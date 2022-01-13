@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.coffeecoders.cryptchat.databinding.ListConversationBinding;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = users.get(position);
         holder.binding.userName.setText(user.getName());
+        Glide.with(context).load(user.getProfileImage()).into(holder.binding.userImage);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return users.size();
     }
 
-    public class UserViewHolder extends RecyclerView.ViewHolder {
+    public static class UserViewHolder extends RecyclerView.ViewHolder {
         ListConversationBinding binding;
 
         public UserViewHolder(@NonNull View itemView) {
