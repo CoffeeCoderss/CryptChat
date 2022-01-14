@@ -1,6 +1,8 @@
 package com.coffeecoders.cryptchat;
 
 public class User {
+    private final static String TAG = "User";
+
     private String uid, name, phoneNumber, profileImage;
 
     public User() {

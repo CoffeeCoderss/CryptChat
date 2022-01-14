@@ -29,6 +29,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 public class ProfileFragment extends Fragment {
+
+    private final static String TAG = "ProfileFragment";
+
     FragmentProfileBinding profileBinding;
     private Toolbar profileToolbar;
     FirebaseAuth firebaseAuth;

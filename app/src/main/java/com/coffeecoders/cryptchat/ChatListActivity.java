@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
+import com.coffeecoders.cryptchat.customAdapters.UserAdapter;
 import com.coffeecoders.cryptchat.databinding.ActivityChatListBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListActivity extends AppCompatActivity {
+
+    private final static String TAG = "ChatListActivity";
     private ActivityChatListBinding chatListBinding;
     private Toolbar chatLToolbar;
     private RecyclerView chatListRecycleView;

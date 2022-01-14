@@ -16,7 +16,9 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ChatActivity"
-            android:exported="false" />
+            android:theme="@style/Chat.Custom.Theme.CryptChat"
+            android:exported="false"
+            android:parentActivityName=".ChatListActivity"/>
         <activity android:name=".ChatListActivity" />
         <activity
             android:name=".MainActivity"

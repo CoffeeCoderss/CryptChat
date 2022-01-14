@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 
 public class OtpFragment extends Fragment {
+    private final static String TAG = "OtpFragment";
+
     FragmentOtpBinding otpBinding;
     private Toolbar otpToolbar;
     FirebaseAuth firebaseAuth;

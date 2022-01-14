@@ -10,6 +10,8 @@ import com.coffeecoders.cryptchat.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+    private final static String TAG = "MainActivity";
+
     private ActivityMainBinding mainBinding;
     private Toolbar toolbar;
     private FirebaseAuth firebaseAuth;

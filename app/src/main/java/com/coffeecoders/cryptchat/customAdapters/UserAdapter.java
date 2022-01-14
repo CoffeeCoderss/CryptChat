@@ -1,6 +1,7 @@
-package com.coffeecoders.cryptchat;
+package com.coffeecoders.cryptchat.customAdapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.coffeecoders.cryptchat.ChatActivity;
+import com.coffeecoders.cryptchat.R;
+import com.coffeecoders.cryptchat.User;
 import com.coffeecoders.cryptchat.databinding.ListConversationBinding;
 
 import java.util.ArrayList;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
+    private final static String TAG = "UserAdapter";
     Context context;
     ArrayList<User> users;
 
@@ -37,6 +42,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 .load(user.getProfileImage())
                 .placeholder(R.drawable.grey_box)
                 .into(holder.binding.userImage);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent chatIntent = new Intent
+                        (view.getContext(), ChatActivity.class );
+                chatIntent.putExtra("name" , user.getName());
+                chatIntent.putExtra("uid" , user.getUid());
+                view.getContext().startActivity(chatIntent);
+            }
+        });
     }
 
     @Override

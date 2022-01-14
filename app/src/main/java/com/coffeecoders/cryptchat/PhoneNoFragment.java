@@ -15,6 +15,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class PhoneNoFragment extends Fragment {
+    private final static String TAG = "PhoneNoFragment";
+
     FragmentPhoneNoBinding phoneNoBinding;
     private Toolbar PhoneNoToolbar;
     FirebaseAuth firebaseAuth;
