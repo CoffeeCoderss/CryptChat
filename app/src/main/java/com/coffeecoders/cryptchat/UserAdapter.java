@@ -33,7 +33,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = users.get(position);
         holder.binding.userName.setText(user.getName());
-        Glide.with(context).load(user.getProfileImage()).into(holder.binding.userImage);
+        Glide.with(context)
+                .load(user.getProfileImage())
+                .placeholder(R.drawable.grey_box)
+                .into(holder.binding.userImage);
     }
 
     @Override
