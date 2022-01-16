@@ -13,33 +13,24 @@ import com.coffeecoders.cryptchat.R;
 import com.coffeecoders.cryptchat.databinding.ItemReceivedBinding;
 import com.coffeecoders.cryptchat.databinding.ItemSentBinding;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.util.ArrayList;
 
 public class ChatAdapter extends RecyclerView.Adapter {
     private final static String TAG = "ChatAdapter";
-
-
     private Context context;
     private ArrayList<MessageModel> messagesList;
     private static final int SENT_CONST = 1;
     private static final int RECEIVE_CONST = 2;
     String sender;
     String receive;
-    private FirebaseRemoteConfig remoteConfig;
 
     public ChatAdapter(Context context, ArrayList<MessageModel> messagesList) {
-        remoteConfig = FirebaseRemoteConfig.getInstance();
         this.context = context;
         this.messagesList = messagesList;
         this.sender = sender;
         this.receive = receive;
     }
-
-
-
-
 
     @NonNull
     @Override
@@ -52,6 +43,8 @@ public class ChatAdapter extends RecyclerView.Adapter {
             return new ReceiverViewHolder(view);
         }
     }
+
+
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
@@ -83,7 +76,6 @@ public class ChatAdapter extends RecyclerView.Adapter {
     }
 
     public class SentViewHolder extends RecyclerView.ViewHolder {
-
         ItemSentBinding binding;
         public SentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -92,9 +84,7 @@ public class ChatAdapter extends RecyclerView.Adapter {
     }
 
     public class ReceiverViewHolder extends RecyclerView.ViewHolder {
-
         ItemReceivedBinding binding;
-
         public ReceiverViewHolder(@NonNull View itemView) {
             super(itemView);
             binding = ItemReceivedBinding.bind(itemView);

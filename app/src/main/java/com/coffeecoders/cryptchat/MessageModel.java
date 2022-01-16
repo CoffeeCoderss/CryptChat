@@ -2,17 +2,25 @@ package com.coffeecoders.cryptchat;
 
 public class MessageModel {
     private final static String TAG = "MessageModel";
-
-    private String message, senderId, imageUrl;
+    private String messageId, message, senderId, imageUrl;
     private long timestamp;
 
     public MessageModel() {
+
     }
 
-    public MessageModel(String senderId, String imageUrl, long timestamp) {
+    public MessageModel(String message, String senderId, long timestamp) {
+        this.message = message;
         this.senderId = senderId;
-        this.imageUrl = imageUrl;
         this.timestamp = timestamp;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public String getMessage() {
@@ -31,19 +39,19 @@ public class MessageModel {
         this.senderId = senderId;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public long getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

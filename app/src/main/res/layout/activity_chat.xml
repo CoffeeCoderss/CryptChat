@@ -9,50 +9,51 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner_view"
         android:elevation="5dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <EditText
             android:id="@+id/msg_editTxt"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
+            android:autofillHints="text"
             android:background="@drawable/rounded_corner_view"
             android:gravity="center|start"
             android:hint="@string/hint_message"
-            android:textColorHint="@color/white"
             android:inputType="textPersonName"
-            android:autofillHints="text" />
+            android:textColor="@color/white"
+            android:textColorHint="@color/off_white" />
+
+        <ImageView
+            android:id="@+id/sendImgView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@string/description_message"
+            android:elevation="5dp"
+            app:srcCompat="@drawable/round_send_24"
+            app:tint="@color/peachpuff" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/sendImgView"
-        android:layout_width="35dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="10dp"
-        android:elevation="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/linearLayout"
-        app:srcCompat="@drawable/round_send_24"
-        app:tint="@color/peachpuff"
-        android:contentDescription="@string/description_message" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="391dp"
-        android:layout_height="789dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        android:id="@+id/chatView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
