@@ -3,10 +3,13 @@ package com.coffeecoders.cryptchat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -24,6 +27,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -42,11 +47,11 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         chatBinding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(chatBinding.getRoot());
-        chatBinding.chatView.setLayoutManager(new LinearLayoutManager(this));
-        chatBinding.chatView.setAdapter(chatAdapter);
-        firebaseFirestore = FirebaseFirestore.getInstance();
         messagesList = new ArrayList<>();
         chatAdapter = new ChatAdapter(this, messagesList);
+        chatBinding.chatRecycleView.setLayoutManager(new LinearLayoutManager(this));
+        chatBinding.chatRecycleView.setAdapter(chatAdapter);
+        firebaseFirestore = FirebaseFirestore.getInstance();
         chatIntent = getIntent();
         String title = chatIntent.getExtras().getString("name");
         String receiverUid = chatIntent.getExtras().getString("uid");
@@ -54,6 +59,8 @@ public class ChatActivity extends AppCompatActivity {
         setTitle(title);
         senderMessage = senderUid + receiverUid;
         receiverMessage = receiverUid + senderUid;
+        Log.e(TAG, "onCreate: senderId"+senderMessage );
+        Log.e(TAG, "onCreate: senderId"+ receiverMessage );
         firebaseFirestore.collection("chats")
                 .document(senderMessage)
                 .collection("messages")
@@ -67,7 +74,13 @@ public class ChatActivity extends AppCompatActivity {
                             MessageModel messageModel = documentSnapshot.toObject(MessageModel.class);
                             messagesList.add(messageModel);
                         }
-                        chatAdapter.notifyDataSetChanged();
+                        Collections.sort(messagesList, new Comparator<MessageModel>() {
+                            @Override
+                            public int compare(MessageModel messageModel, MessageModel t1) {
+                                return (int) (messageModel.getTimestamp() - t1.getTimestamp());
+                            }
+                        });
+                        refreshData();
                     }
                 });
 
@@ -113,4 +126,9 @@ public class ChatActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public void refreshData(){
+        chatAdapter.notifyDataSetChanged();
+    }
+
 }

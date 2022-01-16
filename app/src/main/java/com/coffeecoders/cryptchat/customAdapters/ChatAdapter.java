@@ -28,8 +28,8 @@ public class ChatAdapter extends RecyclerView.Adapter {
     public ChatAdapter(Context context, ArrayList<MessageModel> messagesList) {
         this.context = context;
         this.messagesList = messagesList;
-        this.sender = sender;
-        this.receive = receive;
+//        this.sender = sender;
+//        this.receive = receive;
     }
 
     @NonNull
