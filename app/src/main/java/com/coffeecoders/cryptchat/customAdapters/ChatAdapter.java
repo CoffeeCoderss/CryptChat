@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.coffeecoders.cryptchat.DataChangedListener;
 import com.coffeecoders.cryptchat.MessageModel;
 import com.coffeecoders.cryptchat.R;
 import com.coffeecoders.cryptchat.databinding.ItemReceivedBinding;
@@ -74,6 +75,7 @@ public class ChatAdapter extends RecyclerView.Adapter {
             return RECEIVE_CONST;
         }
     }
+
 
     public class SentViewHolder extends RecyclerView.ViewHolder {
         ItemSentBinding binding;

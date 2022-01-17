@@ -61,14 +61,17 @@ public class ChatActivity extends AppCompatActivity {
         receiverMessage = receiverUid + senderUid;
         Log.e(TAG, "onCreate: senderId"+senderMessage );
         Log.e(TAG, "onCreate: senderId"+ receiverMessage );
+
         firebaseFirestore.collection("chats")
                 .document(senderMessage)
-                .collection("messages")
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot snapshot) {
-                        List<DocumentSnapshot> list = snapshot.getDocuments();
+                .collection("messages").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null)
+                    Log.e(TAG, "ERROR : ", error);
+
+                else{
+                    List<DocumentSnapshot> list = value.getDocuments();
                         messagesList.clear();
                         for (DocumentSnapshot documentSnapshot : list) {
                             MessageModel messageModel = documentSnapshot.toObject(MessageModel.class);
@@ -80,9 +83,10 @@ public class ChatActivity extends AppCompatActivity {
                                 return (int) (messageModel.getTimestamp() - t1.getTimestamp());
                             }
                         });
-                        refreshData();
-                    }
-                });
+                        chatAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
 
         chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
@@ -125,10 +129,6 @@ public class ChatActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void refreshData(){
-        chatAdapter.notifyDataSetChanged();
     }
 
 }
