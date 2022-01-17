@@ -15,7 +15,14 @@ import com.coffeecoders.cryptchat.databinding.ItemReceivedBinding;
 import com.coffeecoders.cryptchat.databinding.ItemSentBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ChatAdapter extends RecyclerView.Adapter {
     private final static String TAG = "ChatAdapter";
@@ -23,6 +30,9 @@ public class ChatAdapter extends RecyclerView.Adapter {
     private ArrayList<MessageModel> messagesList;
     private static final int SENT_CONST = 1;
     private static final int RECEIVE_CONST = 2;
+    private Cipher cipher, decipher;
+    private SecretKeySpec secretKeySpec;
+    private final byte[] encryptionKey = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     String sender;
     String receive;
 
@@ -38,11 +48,32 @@ public class ChatAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if(viewType == SENT_CONST) {
             View view = LayoutInflater.from(context).inflate(R.layout.item_sent, parent, false);
+            secretKeySpec = new SecretKeySpec(encryptionKey, "AES");
             return new SentViewHolder(view);
         } else {
             View view = LayoutInflater.from(context).inflate(R.layout.item_received, parent, false);
             return new ReceiverViewHolder(view);
         }
+    }
+
+
+
+    private String decryption(String string) {
+        byte[] encryptedByte = string.getBytes(StandardCharsets.ISO_8859_1);
+        String decryptedString = string;
+        byte[] decryption;
+        try {
+            decipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+            decryption = decipher.doFinal(encryptedByte);
+            decryptedString = new String(decryption);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return decryptedString;
     }
 
 
@@ -55,7 +86,8 @@ public class ChatAdapter extends RecyclerView.Adapter {
             viewHolder.binding.sendMessage.setText(newMessage.getMessage());
         }else {
             ReceiverViewHolder viewHolder = (ReceiverViewHolder)holder;
-            viewHolder.binding.receivedMessage.setText(newMessage.getMessage());
+            String encryptedMessage = decryption(newMessage.getMessage());
+            viewHolder.binding.receivedMessage.setText(encryptedMessage);
         }
 
 

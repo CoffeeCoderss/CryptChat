@@ -26,11 +26,20 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ChatActivity extends AppCompatActivity {
     private final static String TAG = "ChatActivity";
@@ -40,6 +49,9 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<MessageModel> messagesList;
     private FirebaseStorage storage;
     private FirebaseFirestore firebaseFirestore;
+    private final byte[] encryptionKey = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    private Cipher cipher, decipher;
+    private SecretKeySpec secretKeySpec;
     String senderMessage, receiverMessage;
 
     @Override
@@ -59,8 +71,18 @@ public class ChatActivity extends AppCompatActivity {
         setTitle(title);
         senderMessage = senderUid + receiverUid;
         receiverMessage = receiverUid + senderUid;
-        Log.e(TAG, "onCreate: senderId"+senderMessage );
-        Log.e(TAG, "onCreate: senderId"+ receiverMessage );
+        Log.e(TAG, "onCreate: senderId" + senderMessage);
+        Log.e(TAG, "onCreate: senderId" + receiverMessage);
+        // encryption and decryption
+        try {
+            cipher = Cipher.getInstance("AES");
+            decipher = Cipher.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        secretKeySpec = new SecretKeySpec(encryptionKey, "AES");
 
         firebaseFirestore.collection("chats")
                 .document(senderMessage)
@@ -70,20 +92,20 @@ public class ChatActivity extends AppCompatActivity {
                 if (error != null)
                     Log.e(TAG, "ERROR : ", error);
 
-                else{
+                else {
                     List<DocumentSnapshot> list = value.getDocuments();
-                        messagesList.clear();
-                        for (DocumentSnapshot documentSnapshot : list) {
-                            MessageModel messageModel = documentSnapshot.toObject(MessageModel.class);
-                            messagesList.add(messageModel);
+                    messagesList.clear();
+                    for (DocumentSnapshot documentSnapshot : list) {
+                        MessageModel messageModel = documentSnapshot.toObject(MessageModel.class);
+                        messagesList.add(messageModel);
+                    }
+                    Collections.sort(messagesList, new Comparator<MessageModel>() {
+                        @Override
+                        public int compare(MessageModel messageModel, MessageModel t1) {
+                            return (int) (messageModel.getTimestamp() - t1.getTimestamp());
                         }
-                        Collections.sort(messagesList, new Comparator<MessageModel>() {
-                            @Override
-                            public int compare(MessageModel messageModel, MessageModel t1) {
-                                return (int) (messageModel.getTimestamp() - t1.getTimestamp());
-                            }
-                        });
-                        chatAdapter.notifyDataSetChanged();
+                    });
+                    chatAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -92,7 +114,7 @@ public class ChatActivity extends AppCompatActivity {
         chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String typedMsg = chatBinding.msgEditTxt.getText().toString();
+                String typedMsg = encryption(chatBinding.msgEditTxt.getText().toString());
                 Date date = new Date();
                 MessageModel message = new MessageModel(typedMsg, senderUid, date.getTime());
                 chatBinding.msgEditTxt.setText("");
@@ -118,6 +140,44 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // encryption of message
+    private String encryption(String string) {
+        byte[] stringByte = string.getBytes();
+        byte[] encryptedByte = new byte[stringByte.length];
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            encryptedByte = cipher.doFinal(stringByte);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        String finalString = null;
+        finalString = new String(encryptedByte, StandardCharsets.ISO_8859_1);
+        return finalString;
+    }
+
+    // decryption of message
+    private String decryption(String string) {
+        byte[] encryptedByte = string.getBytes(StandardCharsets.ISO_8859_1);
+        String decryptedString = string;
+        byte[] decryption;
+        try {
+            decipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+            decryption = decipher.doFinal(encryptedByte);
+            decryptedString = new String(decryption);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return decryptedString;
     }
 
 
