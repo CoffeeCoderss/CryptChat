@@ -2,16 +2,19 @@ package com.coffeecoders.cryptchat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.coffeecoders.cryptchat.customAdapters.ChatAdapter;
 import com.coffeecoders.cryptchat.databinding.ActivityChatBinding;
@@ -29,7 +32,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -39,6 +44,11 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.ShortBufferException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class ChatActivity extends AppCompatActivity {
@@ -50,6 +60,8 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private FirebaseFirestore firebaseFirestore;
     private final byte[] encryptionKey = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    private static final String SECRET_KEY = "SECRET_KEY_PASS";
+    private static final String SALT = "ANOTHER_SECRET_KEY_PASS";
     private Cipher cipher, decipher;
     private SecretKeySpec secretKeySpec;
     String senderMessage, receiverMessage;
@@ -75,14 +87,14 @@ public class ChatActivity extends AppCompatActivity {
         Log.e(TAG, "onCreate: senderId" + receiverMessage);
         // encryption and decryption
         try {
-            cipher = Cipher.getInstance("AES");
-            decipher = Cipher.getInstance("AES");
+            cipher = Cipher.getInstance("AES/CFB/NoPadding");
+            decipher = Cipher.getInstance("AES/CFB/NoPadding");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
             e.printStackTrace();
         }
-        secretKeySpec = new SecretKeySpec(encryptionKey, "AES");
+        secretKeySpec = new SecretKeySpec(encryptionKey, "AES/CFB/NoPadding");
 
         firebaseFirestore.collection("chats")
                 .document(senderMessage)
@@ -112,9 +124,11 @@ public class ChatActivity extends AppCompatActivity {
 
 
         chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                String typedMsg = encryption(chatBinding.msgEditTxt.getText().toString());
+                // String typedMsg = encryption(chatBinding.msgEditTxt.getText().toString());
+                String typedMsg = testE(chatBinding.msgEditTxt.getText().toString());
                 Date date = new Date();
                 MessageModel message = new MessageModel(typedMsg, senderUid, date.getTime());
                 chatBinding.msgEditTxt.setText("");
@@ -146,6 +160,7 @@ public class ChatActivity extends AppCompatActivity {
     private String encryption(String string) {
         byte[] stringByte = string.getBytes();
         byte[] encryptedByte = new byte[stringByte.length];
+        int ctLength = 0;
         try {
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
             encryptedByte = cipher.doFinal(stringByte);
@@ -161,6 +176,25 @@ public class ChatActivity extends AppCompatActivity {
         return finalString;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String testE(String string) {
+        try {
+            IvParameterSpec ivspec = new IvParameterSpec(encryptionKey);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+            SecretKey tmp = factory.generateSecret(spec);
+            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
+            return Base64.getEncoder()
+                    .encodeToString(cipher.doFinal(string.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            System.out.println("Error while encrypting: " + e.toString());
+        }
+        return null;
+    }
+
     // decryption of message
     private String decryption(String string) {
         byte[] encryptedByte = string.getBytes(StandardCharsets.ISO_8859_1);
@@ -172,10 +206,13 @@ public class ChatActivity extends AppCompatActivity {
             decryptedString = new String(decryption);
         } catch (InvalidKeyException e) {
             e.printStackTrace();
+            Log.e("error", "invalid key");
         } catch (BadPaddingException e) {
             e.printStackTrace();
+            Log.e("error", "bad padding");
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
+            Log.e("error", "illegal block size");
         }
         return decryptedString;
     }
