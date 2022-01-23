@@ -127,7 +127,7 @@ public class ChatAdapter extends RecyclerView.Adapter {
             viewHolder.binding.sendMessage.setText(testD(newMessage.getMessage()));
         } else {
             ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
-            viewHolder.binding.receivedMessage.setText(newMessage.getMessage());
+            viewHolder.binding.receivedMessage.setText(testD(newMessage.getMessage()));
         }
 
 
