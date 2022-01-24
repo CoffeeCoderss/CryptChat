@@ -45,13 +45,6 @@ public class ChatAdapter extends RecyclerView.Adapter {
     ActivityChatBinding chatBinding;
     private static final int SENT_CONST = 1;
     private static final int RECEIVE_CONST = 2;
-    private static final String SECRET_KEY = "SECRET_KEY_PASS";
-    private static final String SALT = "ANOTHER_SECRET_KEY_PASS";
-    private Cipher cipher, decipher;
-    private final byte[] encryptionKey = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    private final SecretKeySpec secretKeySpec = new SecretKeySpec(new byte[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, "AES/CFB/NoPadding");
-    String sender;
-    String receive;
 
     public ChatAdapter() {
 
@@ -60,8 +53,6 @@ public class ChatAdapter extends RecyclerView.Adapter {
     public ChatAdapter(Context context, ArrayList<MessageModel> messagesList) {
         this.context = context;
         this.messagesList = messagesList;
-//        this.sender = sender;
-//        this.receive = receive;
     }
 
     @NonNull
@@ -77,57 +68,16 @@ public class ChatAdapter extends RecyclerView.Adapter {
     }
 
 
-    private String decryption(String string) {
-        byte[] encryptedByte = new byte[0];
-        encryptedByte = string.getBytes(StandardCharsets.ISO_8859_1);
-        String decryptedString = string;
-        byte[] decryption;
-        try {
-            decipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-            decryption = decipher.doFinal(encryptedByte);
-            decryptedString = new String(decryption);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-            Log.e("error", "invalid key");
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-            Log.e("error", "bad padding");
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-            Log.e("error", "illegal block size");
-        }
-        return decryptedString;
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private String testD(String string) {
-        try {
-            IvParameterSpec ivspec = new IvParameterSpec(encryptionKey);
-
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(string)));
-        } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.toString());
-        }
-        return null;
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MessageModel newMessage = messagesList.get(position);
         if (holder.getClass() == SentViewHolder.class) {
             SentViewHolder viewHolder = (SentViewHolder) holder;
-            viewHolder.binding.sendMessage.setText(testD(newMessage.getMessage()));
+            viewHolder.binding.sendMessage.setText(newMessage.getMessage());
         } else {
             ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
-            viewHolder.binding.receivedMessage.setText(testD(newMessage.getMessage()));
+            viewHolder.binding.receivedMessage.setText(newMessage.getMessage());
         }
 
 

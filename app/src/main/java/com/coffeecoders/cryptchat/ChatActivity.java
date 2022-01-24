@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,12 +30,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -59,12 +61,8 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<MessageModel> messagesList;
     private FirebaseStorage storage;
     private FirebaseFirestore firebaseFirestore;
-    private final byte[] encryptionKey = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    private static final String SECRET_KEY = "SECRET_KEY_PASS";
-    private static final String SALT = "ANOTHER_SECRET_KEY_PASS";
-    private Cipher cipher, decipher;
-    private SecretKeySpec secretKeySpec;
     String senderMessage, receiverMessage;
+    private String key = "fielnviwfjvnkeeythfkladfkkf";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,16 +83,7 @@ public class ChatActivity extends AppCompatActivity {
         receiverMessage = receiverUid + senderUid;
         Log.e(TAG, "onCreate: senderId" + senderMessage);
         Log.e(TAG, "onCreate: senderId" + receiverMessage);
-        // encryption and decryption
-        try {
-            cipher = Cipher.getInstance("AES/CFB/NoPadding");
-            decipher = Cipher.getInstance("AES/CFB/NoPadding");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        }
-        secretKeySpec = new SecretKeySpec(encryptionKey, "AES/CFB/NoPadding");
+
 
         firebaseFirestore.collection("chats")
                 .document(senderMessage)
@@ -109,6 +98,12 @@ public class ChatActivity extends AppCompatActivity {
                     messagesList.clear();
                     for (DocumentSnapshot documentSnapshot : list) {
                         MessageModel messageModel = documentSnapshot.toObject(MessageModel.class);
+                        try {
+                            messageModel.setMessage(decrypt(messageModel.getMessage()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "onEvent: decrypt falied" );
+                        }
                         messagesList.add(messageModel);
                     }
                     Collections.sort(messagesList, new Comparator<MessageModel>() {
@@ -128,7 +123,12 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // String typedMsg = encryption(chatBinding.msgEditTxt.getText().toString());
-                String typedMsg = testE(chatBinding.msgEditTxt.getText().toString());
+                String typedMsg = null;
+                try {
+                    typedMsg = encrypt(chatBinding.msgEditTxt.getText().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 Date date = new Date();
                 MessageModel message = new MessageModel(typedMsg, senderUid, date.getTime());
                 chatBinding.msgEditTxt.setText("");
@@ -156,65 +156,34 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    // encryption of message
-    private String encryption(String string) {
-        byte[] stringByte = string.getBytes();
-        byte[] encryptedByte = new byte[stringByte.length];
-        int ctLength = 0;
-        try {
-            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-            encryptedByte = cipher.doFinal(stringByte);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
-        String finalString = null;
-        finalString = new String(encryptedByte, StandardCharsets.ISO_8859_1);
-        return finalString;
+
+    private SecretKeySpec generateKey() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] bytes = key.getBytes("UTF-8");
+        digest.update(bytes , 0 , bytes.length);
+        byte[] pass = digest.digest();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(pass , "AES");
+        return secretKeySpec;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private String testE(String string) {
-        try {
-            IvParameterSpec ivspec = new IvParameterSpec(encryptionKey);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-            return Base64.getEncoder()
-                    .encodeToString(cipher.doFinal(string.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
-        }
-        return null;
+    private String encrypt(String msg)throws Exception{
+        SecretKeySpec secretKeySpec = generateKey();
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE , secretKeySpec);
+        byte[] encVal = cipher.doFinal(msg.getBytes());
+        String enCryptedMsg = Base64.encodeToString(encVal , Base64.DEFAULT);
+        return enCryptedMsg;
     }
 
-    // decryption of message
-    private String decryption(String string) {
-        byte[] encryptedByte = string.getBytes(StandardCharsets.ISO_8859_1);
-        String decryptedString = string;
-        byte[] decryption;
-        try {
-            decipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-            decryption = decipher.doFinal(encryptedByte);
-            decryptedString = new String(decryption);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-            Log.e("error", "invalid key");
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-            Log.e("error", "bad padding");
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-            Log.e("error", "illegal block size");
-        }
-        return decryptedString;
+
+    private String decrypt(String msg)throws Exception{
+        SecretKeySpec secretKeySpec = generateKey();
+        Cipher deCipher = Cipher.getInstance("AES");
+        deCipher.init(Cipher.DECRYPT_MODE , secretKeySpec);
+        byte[] decodedString = Base64.decode(msg , Base64.DEFAULT);
+        byte[] decVal = deCipher.doFinal(decodedString);
+        String deCryptedMsg = new String(decVal);
+        return deCryptedMsg;
     }
 
 

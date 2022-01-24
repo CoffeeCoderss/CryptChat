@@ -4,18 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp">
+    android:layout_marginTop="5dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp">
 
     <TextView
         android:id="@+id/received_message"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:gravity="center"
-        android:background="@drawable/rounded_corner_view_peachpuff"
+        android:background="@drawable/bg_receive_msg"
         android:paddingStart="7dp"
         android:paddingEnd="7dp"
         android:text="TextView"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
