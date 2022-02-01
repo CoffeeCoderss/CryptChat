@@ -187,7 +187,6 @@ public class ChatActivity extends AppCompatActivity {
         return enCryptedMsg;
     }
 
-
     private String decrypt(String msg)throws Exception{
         SecretKeySpec secretKeySpec = generateKey();
         Cipher deCipher = Cipher.getInstance("AES");
