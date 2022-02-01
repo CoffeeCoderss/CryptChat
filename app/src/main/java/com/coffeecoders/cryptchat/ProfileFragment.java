@@ -58,10 +58,10 @@ public class ProfileFragment extends Fragment {
         profileToolbar = getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Profile");
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
-
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
+
 //        // get the image data and set it
         getImage = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
             profileBinding.profileImage.setImageURI(result);
@@ -73,6 +73,9 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String name = profileBinding.nameTextView.getText().toString();
+                String uid = firebaseAuth.getUid();
+                String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
+                String pKey = profileBinding.personalKey.getText().toString();
                 if (name.isEmpty()) {
                     profileBinding.nameTextView.setError("Please enter a name to continue");
                     return;
@@ -87,10 +90,8 @@ public class ProfileFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         String imageURL = uri.toString();
-                                        String uid = firebaseAuth.getUid();
-                                        String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
-                                        String name = profileBinding.nameTextView.getText().toString();
-                                        User user = new User(uid, name, phone, imageURL);
+
+                                        User user = new User(uid, name, phone, imageURL , pKey);
                                         CollectionReference collectionReference = firebaseFirestore.collection("users");
                                         collectionReference.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                             @Override
@@ -106,10 +107,8 @@ public class ProfileFragment extends Fragment {
                         }
                     });
                 } else {
-                    String uid = firebaseAuth.getUid();
-                    String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
-                    String userName = profileBinding.nameTextView.getText().toString();
-                    User user = new User(uid, userName, phone, "No image");
+
+                    User user = new User(uid, name, phone, "No image" , pKey);
                     CollectionReference collectionReference = firebaseFirestore.collection("users");
                     collectionReference.add(user).addOnSuccessListener(documentReference -> {
                         Intent ChatListIntent = new Intent

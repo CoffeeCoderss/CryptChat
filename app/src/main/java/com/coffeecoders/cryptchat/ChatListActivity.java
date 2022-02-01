@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.coffeecoders.cryptchat.customAdapters.UserAdapter;
 import com.coffeecoders.cryptchat.databinding.ActivityChatListBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -26,6 +27,7 @@ public class ChatListActivity extends AppCompatActivity {
     private UserAdapter userAdapter;
     private FirebaseFirestore firebaseFirestore;
     private ArrayList<User> users;
+    public User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class ChatListActivity extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
         users = new ArrayList<>();
         chatListRecycleView = chatListBinding.chatList;
-        userAdapter = new UserAdapter(this , users);
+        userAdapter = new UserAdapter(this , users , this);
         chatListRecycleView.setLayoutManager(new LinearLayoutManager(this));
         chatListRecycleView.setAdapter(userAdapter);
 
@@ -49,7 +51,11 @@ public class ChatListActivity extends AppCompatActivity {
                     users.clear();
                     for (DocumentSnapshot documentSnapshot : list) {
                         User user = documentSnapshot.toObject(User.class);
-                        users.add(user);
+                        if (!user.getUid().equals(FirebaseAuth.getInstance().getUid())) {
+                            users.add(user);
+                        }else{
+                            currentUser = user;
+                        }
                     }
                     userAdapter.notifyDataSetChanged();
                 }

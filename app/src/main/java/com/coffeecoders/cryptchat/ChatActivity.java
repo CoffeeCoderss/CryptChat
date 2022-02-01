@@ -21,6 +21,12 @@ import com.coffeecoders.cryptchat.customAdapters.ChatAdapter;
 import com.coffeecoders.cryptchat.databinding.ActivityChatBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -62,6 +68,8 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private FirebaseFirestore firebaseFirestore;
     String senderMessage, receiverMessage;
+    private User curUser;
+    private String privateKey="";
     private String key = "fielnviwfjvnkeeythfkladfkkf";
 
     @Override
@@ -78,6 +86,11 @@ public class ChatActivity extends AppCompatActivity {
         String title = chatIntent.getExtras().getString("name");
         String receiverUid = chatIntent.getExtras().getString("uid");
         String senderUid = FirebaseAuth.getInstance().getUid();
+
+
+        String publicKey = chatIntent.getExtras().getString("pKey");
+        String privateKey = chatIntent.getExtras().getString("cuKey");
+        Log.e(TAG, "onCreate: privateKey " + privateKey );
         setTitle(title);
         senderMessage = senderUid + receiverUid;
         receiverMessage = receiverUid + senderUid;
@@ -119,7 +132,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
         chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 // String typedMsg = encryption(chatBinding.msgEditTxt.getText().toString());

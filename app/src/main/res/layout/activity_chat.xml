@@ -38,10 +38,10 @@
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:autofillHints="text"
+                android:inputType="text|textMultiLine|textCapSentences"
                 android:background="@drawable/rounded_corner_view"
                 android:gravity="center|start"
                 android:hint="@string/hint_message"
-                android:inputType="textPersonName"
                 android:textColor="@color/white"
                 android:textColorHint="@color/off_white" />
 

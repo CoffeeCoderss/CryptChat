@@ -61,6 +61,21 @@
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+    <EditText
+        android:id="@+id/personal_Key"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/rounded_corner_view"
+        android:gravity="center"
+        android:hint="Enter the password for private chat"
+        android:inputType="text"
+        android:textColor="@color/white"
+        android:textColorHint="@color/off_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
     <Button
         android:id="@+id/confirmButton"
         android:layout_width="match_parent"
@@ -74,5 +89,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/personal_Key" />
 </androidx.constraintlayout.widget.ConstraintLayout>

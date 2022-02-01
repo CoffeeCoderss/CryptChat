@@ -3,17 +3,19 @@ package com.coffeecoders.cryptchat;
 public class User {
     private final static String TAG = "User";
 
-    private String uid, name, phoneNumber, profileImage;
+    private String uid, name, phoneNumber, profileImage ,personalKey;
 
     public User() {
 
     }
 
-    public User(String uid, String name, String phoneNumber, String profileImage) {
+    public User(String uid, String name, String phoneNumber,
+                String profileImage , String personalKey) {
         this.uid = uid;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.profileImage = profileImage;
+        this.personalKey = personalKey;
     }
 
     public String getUid() {
@@ -46,5 +48,13 @@ public class User {
 
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public String getPersonalKey() {
+        return personalKey;
+    }
+
+    public void setPersonalKey(String personalKey) {
+        this.personalKey = personalKey;
     }
 }

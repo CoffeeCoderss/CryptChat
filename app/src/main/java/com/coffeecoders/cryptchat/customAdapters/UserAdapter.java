@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.coffeecoders.cryptchat.ChatActivity;
+import com.coffeecoders.cryptchat.ChatListActivity;
 import com.coffeecoders.cryptchat.R;
 import com.coffeecoders.cryptchat.User;
 import com.coffeecoders.cryptchat.databinding.ListConversationBinding;
@@ -21,10 +22,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private final static String TAG = "UserAdapter";
     Context context;
     ArrayList<User> users;
+    private ChatListActivity chatListActivity;
 
-    public UserAdapter(Context context, ArrayList<User> users) {
+    public UserAdapter(Context context, ArrayList<User> users , ChatListActivity chatListActivity) {
         this.context = context;
         this.users = users;
+        this.chatListActivity = chatListActivity;
     }
 
     @NonNull
@@ -49,6 +52,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                         (view.getContext(), ChatActivity.class );
                 chatIntent.putExtra("name" , user.getName());
                 chatIntent.putExtra("uid" , user.getUid());
+                chatIntent.putExtra("pKey" , user.getPersonalKey());
+                chatIntent.putExtra("cuKey" , chatListActivity.currentUser.getPersonalKey());
                 view.getContext().startActivity(chatIntent);
             }
         });

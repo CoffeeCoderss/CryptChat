@@ -17,8 +17,23 @@
         android:paddingStart="7dp"
         android:paddingEnd="7dp"
         android:text="TextView"
+        android:inputType="text|textMultiLine|textCapSentences"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <EditText
+        android:id="@+id/receivedKey_edtxt"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:visibility="gone"
+        android:gravity="center"
+        android:background="@drawable/bg_receive_msg"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        android:hint="Enter Key"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></EditText>
 </androidx.constraintlayout.widget.ConstraintLayout>
