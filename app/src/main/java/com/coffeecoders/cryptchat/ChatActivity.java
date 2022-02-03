@@ -13,6 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -59,7 +61,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
     private final static String TAG = "ChatActivity";
     private ActivityChatBinding chatBinding;
     private Intent chatIntent;
@@ -67,10 +69,23 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<MessageModel> messagesList;
     private FirebaseStorage storage;
     private FirebaseFirestore firebaseFirestore;
-    String senderMessage, receiverMessage;
+    private String senderMessage, receiverMessage , protectedMsg;
     private User curUser;
     private String privateKey="";
+    private String publicKey="";
+    private String encryptMsg = "";
+    private String encryptSenderMsg = "";
+    private String encryptReceiverMsg = "";
+    private boolean isProtectedMode = false;
     private String key = "fielnviwfjvnkeeythfkladfkkf";
+
+    public String getProtectedMsg() {
+        return protectedMsg;
+    }
+
+    public void setProtectedMsg(String protectedMsg) {
+        this.protectedMsg = protectedMsg;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +93,8 @@ public class ChatActivity extends AppCompatActivity {
         chatBinding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(chatBinding.getRoot());
         messagesList = new ArrayList<>();
-        chatAdapter = new ChatAdapter(this, messagesList);
+        chatAdapter = new ChatAdapter(this, messagesList ,this , this
+         , chatBinding);
         chatBinding.chatRecycleView.setLayoutManager(new LinearLayoutManager(this));
         chatBinding.chatRecycleView.setAdapter(chatAdapter);
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -87,9 +103,14 @@ public class ChatActivity extends AppCompatActivity {
         String receiverUid = chatIntent.getExtras().getString("uid");
         String senderUid = FirebaseAuth.getInstance().getUid();
 
-
-        String publicKey = chatIntent.getExtras().getString("pKey");
-        String privateKey = chatIntent.getExtras().getString("cuKey");
+        /**
+         * key for receiver msg
+         */
+        publicKey = chatIntent.getExtras().getString("pKey");
+        /**
+         * key for sender msg
+         */
+        privateKey = chatIntent.getExtras().getString("cuKey");
         Log.e(TAG, "onCreate: privateKey " + privateKey );
         setTitle(title);
         senderMessage = senderUid + receiverUid;
@@ -112,7 +133,9 @@ public class ChatActivity extends AppCompatActivity {
                     for (DocumentSnapshot documentSnapshot : list) {
                         MessageModel messageModel = documentSnapshot.toObject(MessageModel.class);
                         try {
-                            messageModel.setMessage(decrypt(messageModel.getMessage()));
+                            if (!messageModel.isProtected()) {
+                                messageModel.setMessage(decrypt(messageModel.getMessage(), key));
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.e(TAG, "onEvent: decrypt falied" );
@@ -137,12 +160,19 @@ public class ChatActivity extends AppCompatActivity {
                 // String typedMsg = encryption(chatBinding.msgEditTxt.getText().toString());
                 String typedMsg = null;
                 try {
-                    typedMsg = encrypt(chatBinding.msgEditTxt.getText().toString());
+                    typedMsg = chatBinding.msgEditTxt.getText().toString();
+                    if (!isProtectedMode) {
+                      encryptMsg = encrypt(typedMsg , key);
+                    }else{
+                        encryptSenderMsg = encrypt(typedMsg , privateKey);
+                        encryptReceiverMsg = encrypt(typedMsg , publicKey);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 Date date = new Date();
-                MessageModel message = new MessageModel(typedMsg, senderUid, date.getTime());
+                MessageModel message = new MessageModel(encryptMsg,encryptSenderMsg,
+                        encryptReceiverMsg, isProtectedMode ,senderUid, date.getTime());
                 chatBinding.msgEditTxt.setText("");
                 firebaseFirestore.collection("chats")
                         .document(senderMessage)
@@ -169,7 +199,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-    private SecretKeySpec generateKey() throws Exception {
+    private SecretKeySpec generateKey(String key) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] bytes = key.getBytes("UTF-8");
         digest.update(bytes , 0 , bytes.length);
@@ -178,8 +208,8 @@ public class ChatActivity extends AppCompatActivity {
         return secretKeySpec;
     }
 
-    private String encrypt(String msg)throws Exception{
-        SecretKeySpec secretKeySpec = generateKey();
+    private String encrypt(String msg , String key)throws Exception{
+        SecretKeySpec secretKeySpec = generateKey(key);
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE , secretKeySpec);
         byte[] encVal = cipher.doFinal(msg.getBytes());
@@ -187,8 +217,8 @@ public class ChatActivity extends AppCompatActivity {
         return enCryptedMsg;
     }
 
-    private String decrypt(String msg)throws Exception{
-        SecretKeySpec secretKeySpec = generateKey();
+    private String decrypt(String msg , String key)throws Exception{
+        SecretKeySpec secretKeySpec = generateKey(key);
         Cipher deCipher = Cipher.getInstance("AES");
         deCipher.init(Cipher.DECRYPT_MODE , secretKeySpec);
         byte[] decodedString = Base64.decode(msg , Base64.DEFAULT);
@@ -197,6 +227,12 @@ public class ChatActivity extends AppCompatActivity {
         return deCryptedMsg;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.chat_menu , menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -204,8 +240,22 @@ public class ChatActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.chatActivity_menu:
+                isProtectedMode = true;
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showDecryptMsg(MessageModel messageModel, boolean isSenderMsg , String senderKey) {
+        if (isSenderMsg){
+            try {
+                protectedMsg = "";
+               protectedMsg =  decrypt(messageModel.getEncryptSenderMsg() , senderKey);
+            }catch (Exception e){}
+
+        }
     }
 
 }

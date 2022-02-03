@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.coffeecoders.cryptchat.ChatActivity;
 import com.coffeecoders.cryptchat.DataChangedListener;
 import com.coffeecoders.cryptchat.MessageModel;
+import com.coffeecoders.cryptchat.OnClickDecrypt;
 import com.coffeecoders.cryptchat.R;
 import com.coffeecoders.cryptchat.databinding.ActivityChatBinding;
 import com.coffeecoders.cryptchat.databinding.ItemReceivedBinding;
@@ -42,7 +44,9 @@ public class ChatAdapter extends RecyclerView.Adapter {
     private final static String TAG = "ChatAdapter";
     private Context context;
     private ArrayList<MessageModel> messagesList;
-    ActivityChatBinding chatBinding;
+    private ActivityChatBinding chatBinding;
+    private OnClickDecrypt onClickDecrypt;
+    private ChatActivity chatActivity;
     private static final int SENT_CONST = 1;
     private static final int RECEIVE_CONST = 2;
 
@@ -50,9 +54,14 @@ public class ChatAdapter extends RecyclerView.Adapter {
 
     }
 
-    public ChatAdapter(Context context, ArrayList<MessageModel> messagesList) {
+    public ChatAdapter(Context context, ArrayList<MessageModel> messagesList ,
+                       OnClickDecrypt onClickDecrypt , ChatActivity chatActivity ,
+                       ActivityChatBinding chatBinding) {
         this.context = context;
         this.messagesList = messagesList;
+        this.onClickDecrypt = onClickDecrypt;
+        this.chatActivity = chatActivity;
+        this.chatBinding = chatBinding;
     }
 
     @NonNull
@@ -74,10 +83,39 @@ public class ChatAdapter extends RecyclerView.Adapter {
         MessageModel newMessage = messagesList.get(position);
         if (holder.getClass() == SentViewHolder.class) {
             SentViewHolder viewHolder = (SentViewHolder) holder;
-            viewHolder.binding.sendMessage.setText(newMessage.getMessage());
+            if (!newMessage.isProtected()) {
+                viewHolder.binding.sendMessage.setText(newMessage.getMessage());
+            }else{
+                viewHolder.binding.sendMessage.setVisibility(View.GONE);
+                viewHolder.binding.sentKeyEdtxt.setVisibility(View.VISIBLE);
+                viewHolder.binding.sentKeyEdtxt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if (b){
+                            Toast.makeText(context , "touched" , Toast.LENGTH_SHORT).show();
+                            chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    String senderPassKey = viewHolder.binding.sentKeyEdtxt.getText().toString();
+                                    onClickDecrypt.showDecryptMsg(newMessage , true ,senderPassKey);
+                                    viewHolder.binding.sentKeyEdtxt.setVisibility(View.GONE);
+                                    viewHolder.binding.sendMessage.setVisibility(View.VISIBLE);
+                                    viewHolder.binding.sendMessage.setText(chatActivity.getProtectedMsg());
+                                }
+                            });
+
+                        }
+                    }
+                });
+            }
         } else {
             ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
-            viewHolder.binding.receivedMessage.setText(newMessage.getMessage());
+            if (!newMessage.isProtected()) {
+                viewHolder.binding.receivedMessage.setText(newMessage.getMessage());
+            }else{
+                viewHolder.binding.receivedMessage.setVisibility(View.GONE);
+                viewHolder.binding.receivedKeyEdtxt.setVisibility(View.VISIBLE);
+            }
         }
 
 
@@ -101,7 +139,6 @@ public class ChatAdapter extends RecyclerView.Adapter {
 
     public class SentViewHolder extends RecyclerView.ViewHolder {
         ItemSentBinding binding;
-
         public SentViewHolder(@NonNull View itemView) {
             super(itemView);
             binding = ItemSentBinding.bind(itemView);
