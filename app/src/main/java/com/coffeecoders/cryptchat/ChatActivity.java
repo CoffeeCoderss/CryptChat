@@ -86,7 +86,6 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         return protectedMsg;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
