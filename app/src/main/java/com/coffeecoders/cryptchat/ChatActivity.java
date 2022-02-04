@@ -82,7 +82,6 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         return key;
     }
 
-
     public String getProtectedMsg() {
         return protectedMsg;
     }
