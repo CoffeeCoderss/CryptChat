@@ -92,7 +92,6 @@ public class ChatAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onFocusChange(View view, boolean b) {
                         if (b){
-                            Toast.makeText(context , "touched" , Toast.LENGTH_SHORT).show();
                             chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -115,6 +114,23 @@ public class ChatAdapter extends RecyclerView.Adapter {
             }else{
                 viewHolder.binding.receivedMessage.setVisibility(View.GONE);
                 viewHolder.binding.receivedKeyEdtxt.setVisibility(View.VISIBLE);
+                viewHolder.binding.receivedKeyEdtxt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if(b){
+                            chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    String senderPassKey = viewHolder.binding.receivedKeyEdtxt.getText().toString();
+                                    onClickDecrypt.showDecryptMsg(newMessage , false ,senderPassKey);
+                                    viewHolder.binding.receivedKeyEdtxt.setVisibility(View.GONE);
+                                    viewHolder.binding.receivedMessage.setVisibility(View.VISIBLE);
+                                    viewHolder.binding.receivedMessage.setText(chatActivity.getProtectedMsg());
+                                }
+                            });
+                        }
+                    }
+                });
             }
         }
 

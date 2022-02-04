@@ -39,6 +39,8 @@ public class ProfileFragment extends Fragment {
     FirebaseStorage firebaseStorage;
     ActivityResultLauncher<String> getImage;
     Uri selectedImage;
+    private ChatActivity chatActivity;
+    private String encrypt_key;
     public ProfileFragment() {
     }
 
@@ -61,7 +63,7 @@ public class ProfileFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-
+        chatActivity = new ChatActivity();
 //        // get the image data and set it
         getImage = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
             profileBinding.profileImage.setImageURI(result);
@@ -76,6 +78,12 @@ public class ProfileFragment extends Fragment {
                 String uid = firebaseAuth.getUid();
                 String phone = firebaseAuth.getCurrentUser().getPhoneNumber();
                 String pKey = profileBinding.personalKey.getText().toString();
+                try {
+                    /** personal key encrypted **/
+                    encrypt_key= chatActivity.encrypt(pKey , chatActivity.getKey());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if (name.isEmpty()) {
                     profileBinding.nameTextView.setError("Please enter a name to continue");
                     return;
@@ -91,7 +99,7 @@ public class ProfileFragment extends Fragment {
                                     public void onSuccess(Uri uri) {
                                         String imageURL = uri.toString();
 
-                                        User user = new User(uid, name, phone, imageURL , pKey);
+                                        User user = new User(uid, name, phone, imageURL , encrypt_key);
                                         CollectionReference collectionReference = firebaseFirestore.collection("users");
                                         collectionReference.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                             @Override
@@ -108,7 +116,7 @@ public class ProfileFragment extends Fragment {
                     });
                 } else {
 
-                    User user = new User(uid, name, phone, "No image" , pKey);
+                    User user = new User(uid, name, phone, "No image" , encrypt_key);
                     CollectionReference collectionReference = firebaseFirestore.collection("users");
                     collectionReference.add(user).addOnSuccessListener(documentReference -> {
                         Intent ChatListIntent = new Intent

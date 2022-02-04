@@ -70,7 +70,6 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
     private FirebaseStorage storage;
     private FirebaseFirestore firebaseFirestore;
     private String senderMessage, receiverMessage , protectedMsg;
-    private User curUser;
     private String privateKey="";
     private String publicKey="";
     private String encryptMsg = "";
@@ -79,13 +78,15 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
     private boolean isProtectedMode = false;
     private String key = "fielnviwfjvnkeeythfkladfkkf";
 
+    public String getKey() {
+        return key;
+    }
+
+
     public String getProtectedMsg() {
         return protectedMsg;
     }
 
-    public void setProtectedMsg(String protectedMsg) {
-        this.protectedMsg = protectedMsg;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,11 +107,19 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         /**
          * key for receiver msg
          */
-        publicKey = chatIntent.getExtras().getString("pKey");
+        try {
+            publicKey = decrypt(chatIntent.getExtras().getString("pKey") , key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         /**
          * key for sender msg
          */
-        privateKey = chatIntent.getExtras().getString("cuKey");
+        try {
+            privateKey = decrypt(chatIntent.getExtras().getString("cuKey") , key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Log.e(TAG, "onCreate: privateKey " + privateKey );
         setTitle(title);
         senderMessage = senderUid + receiverUid;
@@ -208,7 +217,7 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         return secretKeySpec;
     }
 
-    private String encrypt(String msg , String key)throws Exception{
+    public String encrypt(String msg , String key)throws Exception{
         SecretKeySpec secretKeySpec = generateKey(key);
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE , secretKeySpec);
@@ -252,9 +261,14 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         if (isSenderMsg){
             try {
                 protectedMsg = "";
-               protectedMsg =  decrypt(messageModel.getEncryptSenderMsg() , senderKey);
+                protectedMsg =  decrypt(messageModel.getEncryptSenderMsg() , senderKey);
             }catch (Exception e){}
 
+        }else{
+            try {
+                protectedMsg = "";
+                protectedMsg =  decrypt(messageModel.getEncryptReceiverMsg() , senderKey);
+            }catch (Exception e){}
         }
     }
 

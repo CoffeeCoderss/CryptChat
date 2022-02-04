@@ -17,7 +17,6 @@
         android:paddingStart="7dp"
         android:paddingEnd="7dp"
         android:text="TextView"
-        android:inputType="text|textMultiLine|textCapSentences"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"

@@ -52,7 +52,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                         (view.getContext(), ChatActivity.class );
                 chatIntent.putExtra("name" , user.getName());
                 chatIntent.putExtra("uid" , user.getUid());
+                /**receiver key **/
                 chatIntent.putExtra("pKey" , user.getPersonalKey());
+                /**own key **/
                 chatIntent.putExtra("cuKey" , chatListActivity.currentUser.getPersonalKey());
                 view.getContext().startActivity(chatIntent);
             }
