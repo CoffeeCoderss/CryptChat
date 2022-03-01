@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Build;
@@ -76,6 +77,8 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
     private String encryptSenderMsg = "";
     private String encryptReceiverMsg = "";
     private boolean isProtectedMode = false;
+    private LinearLayoutManager mLayoutManager;
+    private RecyclerView recyclerView;
     private String key = "fielnviwfjvnkeeythfkladfkkf";
 
     public String getKey() {
@@ -94,8 +97,25 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         messagesList = new ArrayList<>();
         chatAdapter = new ChatAdapter(this, messagesList ,this , this
          , chatBinding);
-        chatBinding.chatRecycleView.setLayoutManager(new LinearLayoutManager(this));
-        chatBinding.chatRecycleView.setAdapter(chatAdapter);
+        mLayoutManager = new LinearLayoutManager(this);
+        /**start from bottom of the screen **/
+        mLayoutManager.setStackFromEnd(true);
+        recyclerView = chatBinding.chatRecycleView;
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setAdapter(chatAdapter);
+        /**
+         * when keyboard pop up recycleView will scrollDown
+         */
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if( bottom < oldBottom) {
+                    scrollToBottom();
+                }
+            }
+        });
+
         firebaseFirestore = FirebaseFirestore.getInstance();
         chatIntent = getIntent();
         String title = chatIntent.getExtras().getString("name");
@@ -125,7 +145,9 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         Log.e(TAG, "onCreate: senderId" + senderMessage);
         Log.e(TAG, "onCreate: senderId" + receiverMessage);
 
-
+        /**
+         * receive msg from firebase
+         */
         firebaseFirestore.collection("chats")
                 .document(senderMessage)
                 .collection("messages").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -141,6 +163,9 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
                         MessageModel messageModel = documentSnapshot.toObject(MessageModel.class);
                         try {
                             if (!messageModel.isProtected()) {
+                                /**
+                                 * decrypt msg
+                                 */
                                 messageModel.setMessage(decrypt(messageModel.getMessage(), key));
                             }
                         } catch (Exception e) {
@@ -161,9 +186,13 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         });
 
 
+        /**
+         * send message onclickListener
+         */
         chatBinding.sendImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                scrollToBottom();
                 // String typedMsg = encryption(chatBinding.msgEditTxt.getText().toString());
                 String typedMsg = null;
                 try {
@@ -205,7 +234,25 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
 
     }
 
+    /**
+     * scroll the recycleView in backGround to the end of the adapterCount
+     */
+    private void scrollToBottom(){
+        recyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.smoothScrollToPosition(
+                        recyclerView.getAdapter().getItemCount() - 1);
+            }
+        },100);
+    }
 
+    /**
+     * key generation
+     * @param key
+     * @return
+     * @throws Exception
+     */
     private SecretKeySpec generateKey(String key) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] bytes = key.getBytes("UTF-8");
@@ -215,6 +262,13 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         return secretKeySpec;
     }
 
+    /**
+     * encryption
+     * @param msg
+     * @param key
+     * @return
+     * @throws Exception
+     */
     public String encrypt(String msg , String key)throws Exception{
         SecretKeySpec secretKeySpec = generateKey(key);
         Cipher cipher = Cipher.getInstance("AES");
@@ -224,6 +278,13 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         return enCryptedMsg;
     }
 
+    /**
+     * decryption
+     * @param msg
+     * @param key
+     * @return
+     * @throws Exception
+     */
     private String decrypt(String msg , String key)throws Exception{
         SecretKeySpec secretKeySpec = generateKey(key);
         Cipher deCipher = Cipher.getInstance("AES");
@@ -247,6 +308,9 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
             case android.R.id.home:
                 finish();
                 return true;
+            /**
+             * turn on protected mode
+             */
             case R.id.chatActivity_menu:
                 isProtectedMode = true;
                 return true;

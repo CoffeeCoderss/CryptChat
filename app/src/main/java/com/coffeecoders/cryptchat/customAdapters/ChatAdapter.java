@@ -64,6 +64,12 @@ public class ChatAdapter extends RecyclerView.Adapter {
         this.chatBinding = chatBinding;
     }
 
+    /**
+     * check view type then inflate
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -81,9 +87,14 @@ public class ChatAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MessageModel newMessage = messagesList.get(position);
+        /**
+         * if sent type
+         */
         if (holder.getClass() == SentViewHolder.class) {
             SentViewHolder viewHolder = (SentViewHolder) holder;
             if (!newMessage.isProtected()) {
+                viewHolder.binding.sentKeyEdtxt.setVisibility(View.GONE);
+                viewHolder.binding.sendMessage.setVisibility(View.VISIBLE);
                 viewHolder.binding.sendMessage.setText(newMessage.getMessage());
             }else{
                 viewHolder.binding.sendMessage.setVisibility(View.GONE);
@@ -108,8 +119,13 @@ public class ChatAdapter extends RecyclerView.Adapter {
                 });
             }
         } else {
+            /**
+             * if receive type
+             */
             ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
             if (!newMessage.isProtected()) {
+                viewHolder.binding.receivedKeyEdtxt.setVisibility(View.GONE);
+                viewHolder.binding.receivedMessage.setVisibility(View.VISIBLE);
                 viewHolder.binding.receivedMessage.setText(newMessage.getMessage());
             }else{
                 viewHolder.binding.receivedMessage.setVisibility(View.GONE);
@@ -142,6 +158,11 @@ public class ChatAdapter extends RecyclerView.Adapter {
         return messagesList.size();
     }
 
+    /**
+     * return itemView type according to msg type
+     * @param position
+     * @return
+     */
     @Override
     public int getItemViewType(int position) {
         MessageModel newMessage = messagesList.get(position);
@@ -152,7 +173,9 @@ public class ChatAdapter extends RecyclerView.Adapter {
         }
     }
 
-
+    /**
+     * sent view
+     */
     public class SentViewHolder extends RecyclerView.ViewHolder {
         ItemSentBinding binding;
         public SentViewHolder(@NonNull View itemView) {
@@ -161,6 +184,9 @@ public class ChatAdapter extends RecyclerView.Adapter {
         }
     }
 
+    /**
+     * receive view
+     */
     public class ReceiverViewHolder extends RecyclerView.ViewHolder {
         ItemReceivedBinding binding;
 
