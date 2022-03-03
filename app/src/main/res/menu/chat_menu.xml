@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- safe to delete
     <item
         android:id="@+id/chatActivity_menu"
         android:textSize="20dp"
         android:title="Enable protected mode"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
+    -->
+    <item
+        android:id="@+id/menu_item"
+        android:icon="@drawable/lock"
+        android:iconTint="@color/white"
+        android:title="@string/lock"
+        app:showAsAction="ifRoom"
+        tools:targetApi="o" />
 </menu>

@@ -3,6 +3,7 @@ package com.coffeecoders.cryptchat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -19,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.coffeecoders.cryptchat.customAdapters.ChatAdapter;
 import com.coffeecoders.cryptchat.databinding.ActivityChatBinding;
@@ -103,6 +105,10 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
         recyclerView = chatBinding.chatRecycleView;
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(chatAdapter);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayShowHomeEnabled(true);
+
         /**
          * when keyboard pop up recycleView will scrollDown
          */
@@ -311,8 +317,9 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
             /**
              * turn on protected mode
              */
-            case R.id.chatActivity_menu:
+            case R.id.menu_item:
                 isProtectedMode = true;
+                item.setIcon(R.drawable.lock2);
                 return true;
         }
         return super.onOptionsItemSelected(item);
