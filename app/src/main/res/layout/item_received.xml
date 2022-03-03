@@ -30,7 +30,7 @@
         android:background="@drawable/bg_receive_msg"
         android:paddingStart="7dp"
         android:paddingEnd="7dp"
-        android:hint="Enter Pass Key"
+        android:hint="Enter Password"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"

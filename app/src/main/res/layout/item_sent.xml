@@ -30,7 +30,7 @@
         android:paddingStart="7dp"
         android:paddingEnd="7dp"
         android:gravity="center"
-        android:hint="Enter Pass Key"
+        android:hint="Enter Password"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"

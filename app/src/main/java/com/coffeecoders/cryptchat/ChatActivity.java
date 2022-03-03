@@ -317,9 +317,16 @@ public class ChatActivity extends AppCompatActivity implements OnClickDecrypt {
             /**
              * turn on protected mode
              */
-            case R.id.menu_item:
-                isProtectedMode = true;
-                item.setIcon(R.drawable.lock2);
+            case R.id.chatActivity_menu:
+                if (!isProtectedMode) {
+                    isProtectedMode = true;
+                    item.setIcon(R.drawable.lock2);
+                    Toast.makeText(this , "Private mode ON" , Toast.LENGTH_SHORT).show();
+                }else{
+                    isProtectedMode = false;
+                    item.setIcon(R.drawable.lock);
+                    Toast.makeText(this , "Private mode OFF" , Toast.LENGTH_SHORT).show();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
